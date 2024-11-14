@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Loading...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f2f5;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lấy ID của GIF từ URL
+            const path = window.location.pathname;
+            const id = path.split('/').pop();
+            
+            // Lấy thông tin GIF từ localStorage
+            const gifInfo = JSON.parse(localStorage.getItem(`gif_${id}`));
+            
+            if (gifInfo) {
+                // Hiển thị GIF
+                const img = document.createElement('img');
+                img.src = gifInfo.data;
+                document.body.appendChild(img);
+                
+                // Tạo iframe ẩn để chuyển hướng ngầm
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = gifInfo.targetUrl;
+                document.body.appendChild(iframe);
+            } else {
+                document.body.innerHTML = 'GIF không tồn tại';
+            }
+        });
+    </script>
+</head>
+<body>
+</body>
+</html>
