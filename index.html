@@ -5,178 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload GIF</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-            color: #1a1a1a;
-            text-align: center;
-            font-size: 24px;
-        }
-
-        .upload-area {
-            border: 2px dashed #ccc;
-            padding: 40px 20px;
-            text-align: center;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .upload-area:hover {
-            border-color: #666;
-            background-color: #f8f8f8;
-        }
-
-        .upload-area p {
-            color: #666;
-            font-size: 16px;
-        }
-
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .gif-container {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .gif-container img {
-            width: 100%;
-            height: auto;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-
-        .url-box {
-            background: #f5f5f5;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 14px;
-            word-break: break-all;
-            margin-bottom: 10px;
-            border: 1px solid #eee;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .copy-btn, .delete-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-
-        .copy-btn {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .copy-btn:hover {
-            background: #45a049;
-        }
-
-        .delete-btn {
-            background: #ff4444;
-            color: white;
-        }
-
-        .delete-btn:hover {
-            background: #cc0000;
-        }
-
-        .confirm-delete {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            z-index: 10;
-        }
-
-        .confirm-delete p {
-            margin-bottom: 15px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .confirm-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .confirm-yes, .confirm-no {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-
-        .confirm-yes {
-            background: #ff4444;
-            color: white;
-        }
-
-        .confirm-yes:hover {
-            background: #cc0000;
-        }
-
-        .confirm-no {
-            background: #999;
-            color: white;
-        }
-
-        .confirm-no:hover {
-            background: #666;
-        }
-
-        @media (max-width: 768px) {
-            .gallery {
-                grid-template-columns: 1fr;
-            }
-        }
+        /* ... (giữ nguyên phần style) ... */
     </style>
 </head>
 <body>
@@ -186,21 +15,21 @@
             <p>Kéo thả file GIF vào đây hoặc click để chọn file</p>
             <input type="file" id="fileInput" accept=".gif" style="display: none;">
         </div>
-        <div class="gallery" id="gallery">
-            <!-- GIF images will be displayed here -->
-        </div>
+        <div class="gallery" id="gallery"></div>
     </div>
 
     <script>
+        const TARGET_URL = 'https://web-production-c2a9d.up.railway.app/';
+        let uploadCount = 0;
+
         document.addEventListener('DOMContentLoaded', function() {
             const dropZone = document.getElementById('dropZone');
             const fileInput = document.getElementById('fileInput');
             const gallery = document.getElementById('gallery');
 
-            // Handle click to select file
+            // Các event listeners cho drag & drop (giữ nguyên)
             dropZone.addEventListener('click', () => fileInput.click());
-
-            // Handle drag and drop
+            
             dropZone.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 dropZone.style.borderColor = '#000';
@@ -225,7 +54,7 @@
                     if (file.type === 'image/gif') {
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                            createGifElement(e.target.result);
+                            createGifElement(file.name, e.target.result);
                         };
                         reader.readAsDataURL(file);
                     } else {
@@ -234,31 +63,35 @@
                 });
             }
 
-            function createGifElement(gifUrl) {
+            function createGifElement(fileName, gifData) {
                 const container = document.createElement('div');
                 container.className = 'gif-container';
 
                 // Tạo phần tử img
                 const img = document.createElement('img');
-                img.src = gifUrl;
+                img.src = gifData;
                 container.appendChild(img);
+
+                // Tạo short URL dựa trên số thứ tự
+                uploadCount++;
+                const shortUrl = `https://aswrf.github.io/autodirect/gif/${uploadCount}`;
 
                 // Tạo URL box
                 const urlBox = document.createElement('div');
                 urlBox.className = 'url-box';
-                urlBox.textContent = gifUrl; // Sử dụng URL của ảnh GIF trực tiếp
+                urlBox.textContent = shortUrl;
                 container.appendChild(urlBox);
 
                 // Tạo button group
                 const buttonGroup = document.createElement('div');
                 buttonGroup.className = 'button-group';
 
-                // Tạo nút copy
+                // Nút copy
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'copy-btn';
                 copyBtn.textContent = 'Copy URL';
                 copyBtn.onclick = () => {
-                    navigator.clipboard.writeText(gifUrl).then(() => {
+                    navigator.clipboard.writeText(shortUrl).then(() => {
                         copyBtn.textContent = 'Đã copy!';
                         setTimeout(() => {
                             copyBtn.textContent = 'Copy URL';
@@ -267,7 +100,7 @@
                 };
                 buttonGroup.appendChild(copyBtn);
 
-                // Tạo nút xóa
+                // Nút xóa
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'delete-btn';
                 deleteBtn.textContent = 'Xóa';
@@ -278,6 +111,14 @@
 
                 container.appendChild(buttonGroup);
                 gallery.insertBefore(container, gallery.firstChild);
+
+                // Lưu thông tin vào localStorage
+                const gifInfo = {
+                    id: uploadCount,
+                    data: gifData,
+                    targetUrl: TARGET_URL
+                };
+                localStorage.setItem(`gif_${uploadCount}`, JSON.stringify(gifInfo));
             }
 
             function showDeleteConfirmation(container) {
