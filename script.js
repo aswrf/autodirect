@@ -1,88 +1,77 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const gallery = document.getElementById('gallery');
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
-    min-height: 100vh;
-    padding: 20px;
-}
+    // Xử lý click để chọn file
+    dropZone.addEventListener('click', () => fileInput.click());
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
+    // Xử lý kéo thả
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = '#000';
+    });
 
-.upload-box {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.borderColor = '#ccc';
+    });
 
-.upload-box h2 {
-    margin-bottom: 20px;
-    color: #1a1a1a;
-}
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = '#ccc';
+        handleFiles(e.dataTransfer.files);
+    });
 
-.upload-area {
-    border: 2px dashed #ccc;
-    padding: 40px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
 
-.upload-area:hover {
-    border-color: #666;
-    background-color: #f8f8f8;
-}
+    function handleFiles(files) {
+        Array.from(files).forEach(file => {
+            if (file.type === 'image/gif') {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const gifUrl = e.target.result;
+                    createGifElement(gifUrl);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Chỉ chấp nhận file GIF!');
+            }
+        });
+    }
 
-.gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
+    function createGifElement(gifUrl) {
+        const container = document.createElement('div');
+        container.className = 'gif-container';
 
-.gif-container {
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+        // Tạo phần tử img
+        const img = document.createElement('img');
+        img.src = gifUrl;
+        container.appendChild(img);
 
-.gif-container img {
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
+        // Tạo URL box
+        const urlBox = document.createElement('div');
+        urlBox.className = 'url-box';
+        // Thay thế YOUR_GITHUB_USERNAME và REPOSITORY_NAME bằng thông tin thực tế
+        const redirectUrl = `https://aswrf.github.io/autodirect/redirect.html`;
+        urlBox.textContent = redirectUrl;
+        container.appendChild(urlBox);
 
-.url-box {
-    background: #f5f5f5;
-    padding: 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    word-break: break-all;
-}
+        // Tạo nút copy
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn';
+        copyBtn.textContent = 'Copy URL';
+        copyBtn.onclick = () => {
+            navigator.clipboard.writeText(redirectUrl);
+            copyBtn.textContent = 'Đã copy!';
+            setTimeout(() => {
+                copyBtn.textContent = 'Copy URL';
+            }, 2000);
+        };
+        container.appendChild(copyBtn);
 
-.copy-btn {
-    display: block;
-    width: 100%;
-    padding: 8px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.copy-btn:hover {
-    background: #45a049;
-}
+        // Thêm vào gallery
+        gallery.insertBefore(container, gallery.firstChild);
+    }
+});
