@@ -13,8 +13,9 @@
 
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
             padding: 20px;
-            background: #f0f2f5;
+            min-height: 100vh;
         }
 
         .container {
@@ -24,27 +25,43 @@
 
         h1 {
             margin-bottom: 20px;
+            color: #1a1a1a;
+            text-align: center;
+            font-size: 24px;
         }
 
         .upload-area {
             border: 2px dashed #ccc;
-            padding: 40px;
+            padding: 40px 20px;
             text-align: center;
             background: white;
             border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s ease;
             margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .upload-area:hover {
+            border-color: #666;
+            background-color: #f8f8f8;
+        }
+
+        .upload-area p {
+            color: #666;
+            font-size: 16px;
         }
 
         .gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            margin-top: 20px;
         }
 
         .gif-container {
             background: white;
-            padding: 10px;
+            padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             position: relative;
@@ -57,18 +74,19 @@
             margin-bottom: 10px;
         }
 
-        .url-text {
+        .url-box {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
             font-size: 14px;
             word-break: break-all;
-            background: #f5f5f5;
-            padding: 8px;
-            border-radius: 4px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
         }
 
         .button-group {
             display: flex;
             gap: 10px;
-            margin-top: 10px;
         }
 
         .copy-btn, .delete-btn {
@@ -105,19 +123,19 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
             border-radius: 8px;
             padding: 20px;
             text-align: center;
+            z-index: 10;
         }
 
         .confirm-delete p {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             font-weight: bold;
             color: #333;
         }
@@ -127,12 +145,13 @@
             gap: 10px;
         }
 
-        .confirm-delete button {
-            padding: 8px 16px;
+        .confirm-yes, .confirm-no {
+            padding: 8px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+            transition: background-color 0.3s;
         }
 
         .confirm-yes {
@@ -140,9 +159,23 @@
             color: white;
         }
 
+        .confirm-yes:hover {
+            background: #cc0000;
+        }
+
         .confirm-no {
             background: #999;
             color: white;
+        }
+
+        .confirm-no:hover {
+            background: #666;
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -192,8 +225,7 @@
                     if (file.type === 'image/gif') {
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                            const gifUrl = e.target.result;
-                            createGifElement(gifUrl);
+                            createGifElement(e.target.result);
                         };
                         reader.readAsDataURL(file);
                     } else {
@@ -206,41 +238,45 @@
                 const container = document.createElement('div');
                 container.className = 'gif-container';
 
+                // Tạo phần tử img
                 const img = document.createElement('img');
                 img.src = gifUrl;
                 container.appendChild(img);
 
-                const urlText = document.createElement('div');
-                urlText.className = 'url-text';
-                const redirectUrl = `https://aswrf.github.io/autodirect/redirect.html`;
-                urlText.textContent = redirectUrl;
-                container.appendChild(urlText);
+                // Tạo URL box
+                const urlBox = document.createElement('div');
+                urlBox.className = 'url-box';
+                urlBox.textContent = gifUrl; // Sử dụng URL của ảnh GIF trực tiếp
+                container.appendChild(urlBox);
 
+                // Tạo button group
                 const buttonGroup = document.createElement('div');
                 buttonGroup.className = 'button-group';
 
+                // Tạo nút copy
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'copy-btn';
                 copyBtn.textContent = 'Copy URL';
                 copyBtn.onclick = () => {
-                    navigator.clipboard.writeText(redirectUrl);
-                    copyBtn.textContent = 'Đã copy!';
-                    setTimeout(() => {
-                        copyBtn.textContent = 'Copy URL';
-                    }, 2000);
+                    navigator.clipboard.writeText(gifUrl).then(() => {
+                        copyBtn.textContent = 'Đã copy!';
+                        setTimeout(() => {
+                            copyBtn.textContent = 'Copy URL';
+                        }, 2000);
+                    });
                 };
+                buttonGroup.appendChild(copyBtn);
 
+                // Tạo nút xóa
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'delete-btn';
                 deleteBtn.textContent = 'Xóa';
                 deleteBtn.onclick = () => {
                     showDeleteConfirmation(container);
                 };
-
-                buttonGroup.appendChild(copyBtn);
                 buttonGroup.appendChild(deleteBtn);
-                container.appendChild(buttonGroup);
 
+                container.appendChild(buttonGroup);
                 gallery.insertBefore(container, gallery.firstChild);
             }
 

