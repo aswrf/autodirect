@@ -3,23 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIF Upload</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Upload GIF</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .gif-container {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .gif-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .url-text {
+            font-size: 14px;
+            word-break: break-all;
+            background: #f5f5f5;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .copy-btn, .delete-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .copy-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background: #45a049;
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #cc0000;
+        }
+
+        .confirm-delete {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .confirm-delete p {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .confirm-delete button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .confirm-yes {
+            background: #ff4444;
+            color: white;
+        }
+
+        .confirm-no {
+            background: #999;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="upload-box">
-            <h2>Upload GIF</h2>
-            <div class="upload-area" id="dropZone">
-                <p>Kéo thả file GIF vào đây hoặc click để chọn file</p>
-                <input type="file" id="fileInput" accept=".gif" hidden>
-            </div>
+        <h1>Upload GIF</h1>
+        <div class="upload-area" id="dropZone">
+            <p>Kéo thả file GIF vào đây hoặc click để chọn file</p>
+            <input type="file" id="fileInput" accept=".gif" style="display: none;">
         </div>
-        
         <div class="gallery" id="gallery">
-            <!-- Ảnh GIF sẽ hiển thị ở đây -->
+            <!-- GIF images will be displayed here -->
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const gallery = document.getElementById('gallery');
+
+            // Handle click to select file
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            // Handle drag and drop
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#000';
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.style.borderColor = '#ccc';
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#ccc';
+                handleFiles(e.dataTransfer.files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            function handleFiles(files) {
+                Array.from(files).forEach(file => {
+                    if (file.type === 'image/gif') {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const gifUrl = e.target.result;
+                            createGifElement(gifUrl);
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        alert('Chỉ chấp nhận file GIF!');
+                    }
+                });
+            }
+
+            function createGifElement(gifUrl) {
+                const container = document.createElement('div');
+                container.className = 'gif-container';
+
+                const img = document.createElement('img');
+                img.src = gifUrl;
+                container.appendChild(img);
+
+                const urlText = document.createElement('div');
+                urlText.className = 'url-text';
+                const redirectUrl = `https://aswrf.github.io/autodirect/redirect.html`;
+                urlText.textContent = redirectUrl;
+                container.appendChild(urlText);
+
+                const buttonGroup = document.createElement('div');
+                buttonGroup.className = 'button-group';
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.textContent = 'Copy URL';
+                copyBtn.onclick = () => {
+                    navigator.clipboard.writeText(redirectUrl);
+                    copyBtn.textContent = 'Đã copy!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy URL';
+                    }, 2000);
+                };
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = 'Xóa';
+                deleteBtn.onclick = () => {
+                    showDeleteConfirmation(container);
+                };
+
+                buttonGroup.appendChild(copyBtn);
+                buttonGroup.appendChild(deleteBtn);
+                container.appendChild(buttonGroup);
+
+                gallery.insertBefore(container, gallery.firstChild);
+            }
+
+            function showDeleteConfirmation(container) {
+                const confirmBox = document.createElement('div');
+                confirmBox.className = 'confirm-delete';
+                
+                const message = document.createElement('p');
+                message.textContent = 'Bạn có chắc chắn muốn xóa?';
+                
+                const buttonsContainer = document.createElement('div');
+                buttonsContainer.className = 'confirm-buttons';
+                
+                const yesButton = document.createElement('button');
+                yesButton.className = 'confirm-yes';
+                yesButton.textContent = 'Có';
+                yesButton.onclick = () => {
+                    container.remove();
+                };
+                
+                const noButton = document.createElement('button');
+                noButton.className = 'confirm-no';
+                noButton.textContent = 'Không';
+                noButton.onclick = () => {
+                    confirmBox.remove();
+                };
+                
+                buttonsContainer.appendChild(yesButton);
+                buttonsContainer.appendChild(noButton);
+                confirmBox.appendChild(message);
+                confirmBox.appendChild(buttonsContainer);
+                container.appendChild(confirmBox);
+            }
+        });
+    </script>
 </body>
 </html>

