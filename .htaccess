@@ -1,2 +1,4 @@
-RewriteEngine On
-RewriteRule ^gif/([0-9]+)$ gif.html [L]
+# Nội dung mới cho .htaccess
+echo "RewriteEngine On
+RewriteBase /
+RewriteRule ^gif/([0-9]+)/?$ gif/index.html [L]" > .htaccess
