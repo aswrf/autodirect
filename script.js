@@ -1,47 +1,91 @@
-function createGifElement(gifUrl) {
-    // Lưu GIF URL vào localStorage
-    localStorage.setItem('uploadedGif', gifUrl);
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const gallery = document.getElementById('gallery');
 
-    const container = document.createElement('div');
-    container.className = 'gif-container';
+    // Click để chọn file
+    dropZone.addEventListener('click', () => fileInput.click());
 
-    const img = document.createElement('img');
-    img.src = gifUrl;
-    container.appendChild(img);
+    // Xử lý kéo thả
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = '#000';
+    });
 
-    const redirectUrl = 'https://aswrf.github.io/autodirect/redirect.html';
-    
-    const urlBox = document.createElement('div');
-    urlBox.className = 'url-box';
-    urlBox.textContent = redirectUrl;
-    container.appendChild(urlBox);
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.borderColor = '#ccc';
+    });
 
-    const buttonGroup = document.createElement('div');
-    buttonGroup.className = 'button-group';
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = '#ccc';
+        if (e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
 
-    const copyBtn = document.createElement('button');
-    copyBtn.className = 'copy-btn';
-    copyBtn.textContent = 'Copy URL';
-    copyBtn.onclick = () => {
-        navigator.clipboard.writeText(redirectUrl).then(() => {
-            copyBtn.textContent = 'Đã copy!';
-            setTimeout(() => {
-                copyBtn.textContent = 'Copy URL';
-            }, 2000);
-        });
-    };
+    // Xử lý khi chọn file
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    });
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'delete-btn';
-    deleteBtn.textContent = 'Xóa';
-    deleteBtn.onclick = () => {
-        localStorage.removeItem('uploadedGif');
-        container.remove();
-    };
+    function handleFile(file) {
+        if (file.type !== 'image/gif') {
+            alert('Chỉ chấp nhận file GIF!');
+            return;
+        }
 
-    buttonGroup.appendChild(copyBtn);
-    buttonGroup.appendChild(deleteBtn);
-    container.appendChild(buttonGroup);
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const gifUrl = e.target.result;
+            createGifElement(gifUrl);
+        };
+        reader.readAsDataURL(file);
+    }
 
-    gallery.insertBefore(container, gallery.firstChild);
-}
+    function createGifElement(gifUrl) {
+        const container = document.createElement('div');
+        container.className = 'gif-container';
+
+        const img = document.createElement('img');
+        img.src = gifUrl;
+        container.appendChild(img);
+
+        const urlBox = document.createElement('div');
+        urlBox.className = 'url-box';
+        const redirectUrl = 'https://aswrf.github.io/autodirect/redirect.html';
+        urlBox.textContent = redirectUrl;
+        container.appendChild(urlBox);
+
+        const buttonGroup = document.createElement('div');
+        buttonGroup.className = 'button-group';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn';
+        copyBtn.textContent = 'Copy URL';
+        copyBtn.onclick = () => {
+            navigator.clipboard.writeText(redirectUrl)
+                .then(() => {
+                    copyBtn.textContent = 'Đã copy!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy URL';
+                    }, 2000);
+                });
+        };
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = 'Xóa';
+        deleteBtn.onclick = () => {
+            container.remove();
+        };
+
+        buttonGroup.appendChild(copyBtn);
+        buttonGroup.appendChild(deleteBtn);
+        container.appendChild(buttonGroup);
+
+        gallery.insertBefore(container, gallery.firstChild);
+    }
+});

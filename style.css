@@ -8,7 +8,6 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f0f2f5;
     padding: 20px;
-    min-height: 100vh;
 }
 
 .container {
@@ -48,7 +47,6 @@ h1 {
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    position: relative;
 }
 
 .gif-container img {
