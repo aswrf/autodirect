@@ -29,6 +29,12 @@
             margin-bottom: 20px;
             background: white;
             cursor: pointer;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: #666;
         }
 
         .gallery {
@@ -40,11 +46,13 @@
             background: white;
             padding: 15px;
             border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .gif-container img {
             max-width: 100%;
             height: auto;
+            border-radius: 4px;
         }
 
         .url-box {
@@ -52,24 +60,42 @@
             padding: 10px;
             background: #f5f5f5;
             word-break: break-all;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
         }
 
         button {
+            flex: 1;
             padding: 10px;
-            margin: 5px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
         }
 
         .copy-btn {
             background: #4CAF50;
             color: white;
-            border: none;
+        }
+
+        .copy-btn:hover {
+            background: #45a049;
         }
 
         .delete-btn {
             background: #ff4444;
             color: white;
-            border: none;
+        }
+
+        .delete-btn:hover {
+            background: #cc0000;
         }
     </style>
 </head>
@@ -83,62 +109,111 @@
     </div>
 
     <script>
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const gallery = document.getElementById('gallery');
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const gallery = document.getElementById('gallery');
 
-        dropZone.onclick = () => fileInput.click();
+            // Handle click to choose file
+            dropZone.addEventListener('click', () => {
+                fileInput.click();
+            });
 
-        fileInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file && file.type === 'image/gif') {
+            // Handle drag and drop
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.style.borderColor = '#000';
+            });
+
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.style.borderColor = '#ccc';
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.style.borderColor = '#ccc';
+                
+                const files = e.dataTransfer.files;
+                if (files && files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+
+            // Handle file selection
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+
+            function handleFile(file) {
+                if (file.type !== 'image/gif') {
+                    alert('Chỉ chấp nhận file GIF!');
+                    return;
+                }
+
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = function(e) {
                     const gifData = e.target.result;
                     localStorage.setItem('uploadedGif', gifData);
                     showGif(gifData);
                 };
                 reader.readAsDataURL(file);
             }
-        };
 
-        function showGif(gifData) {
-            const container = document.createElement('div');
-            container.className = 'gif-container';
-            
-            const img = document.createElement('img');
-            img.src = gifData;
-            
-            const url = document.createElement('div');
-            url.className = 'url-box';
-            url.textContent = 'https://aswrf.github.io/autodirect/redirect.html';
-            
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'copy-btn';
-            copyBtn.textContent = 'Copy URL';
-            copyBtn.onclick = () => {
-                navigator.clipboard.writeText('https://aswrf.github.io/autodirect/redirect.html');
-                copyBtn.textContent = 'Đã copy!';
-                setTimeout(() => copyBtn.textContent = 'Copy URL', 2000);
-            };
-            
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.textContent = 'Xóa';
-            deleteBtn.onclick = () => {
-                container.remove();
-                localStorage.removeItem('uploadedGif');
-            };
-            
-            container.append(img, url, copyBtn, deleteBtn);
-            gallery.insertBefore(container, gallery.firstChild);
-        }
+            function showGif(gifData) {
+                const container = document.createElement('div');
+                container.className = 'gif-container';
+                
+                const img = document.createElement('img');
+                img.src = gifData;
+                
+                const url = document.createElement('div');
+                url.className = 'url-box';
+                url.textContent = 'https://aswrf.github.io/autodirect/redirect.html';
+                
+                const buttons = document.createElement('div');
+                buttons.className = 'buttons';
+                
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.textContent = 'Copy URL';
+                copyBtn.onclick = () => {
+                    navigator.clipboard.writeText('https://aswrf.github.io/autodirect/redirect.html')
+                        .then(() => {
+                            copyBtn.textContent = 'Đã copy!';
+                            setTimeout(() => copyBtn.textContent = 'Copy URL', 2000);
+                        });
+                };
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = 'Xóa';
+                deleteBtn.onclick = () => {
+                    container.remove();
+                    localStorage.removeItem('uploadedGif');
+                };
+                
+                buttons.appendChild(copyBtn);
+                buttons.appendChild(deleteBtn);
+                
+                container.appendChild(img);
+                container.appendChild(url);
+                container.appendChild(buttons);
+                
+                gallery.insertBefore(container, gallery.firstChild);
+            }
 
-        // Load saved GIF if exists
-        const savedGif = localStorage.getItem('uploadedGif');
-        if (savedGif) {
-            showGif(savedGif);
-        }
+            // Load saved GIF if exists
+            const savedGif = localStorage.getItem('uploadedGif');
+            if (savedGif) {
+                showGif(savedGif);
+            }
+        });
     </script>
 </body>
 </html>
