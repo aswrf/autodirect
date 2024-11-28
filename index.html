@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload GIF</title>
-    <style>
-        /* ... (giữ nguyên phần style) ... */
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -15,143 +13,10 @@
             <p>Kéo thả file GIF vào đây hoặc click để chọn file</p>
             <input type="file" id="fileInput" accept=".gif" style="display: none;">
         </div>
-        <div class="gallery" id="gallery"></div>
+        <div class="gallery" id="gallery">
+            <!-- GIF images will be displayed here -->
+        </div>
     </div>
-
-    <script>
-        const TARGET_URL = 'https://web-production-c2a9d.up.railway.app/';
-        let uploadCount = 0;
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropZone = document.getElementById('dropZone');
-            const fileInput = document.getElementById('fileInput');
-            const gallery = document.getElementById('gallery');
-
-            // Các event listeners cho drag & drop (giữ nguyên)
-            dropZone.addEventListener('click', () => fileInput.click());
-            
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.style.borderColor = '#000';
-            });
-
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.style.borderColor = '#ccc';
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.style.borderColor = '#ccc';
-                handleFiles(e.dataTransfer.files);
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                handleFiles(e.target.files);
-            });
-
-            function handleFiles(files) {
-                Array.from(files).forEach(file => {
-                    if (file.type === 'image/gif') {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            createGifElement(file.name, e.target.result);
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        alert('Chỉ chấp nhận file GIF!');
-                    }
-                });
-            }
-
-            function createGifElement(fileName, gifData) {
-                const container = document.createElement('div');
-                container.className = 'gif-container';
-
-                // Tạo phần tử img
-                const img = document.createElement('img');
-                img.src = gifData;
-                container.appendChild(img);
-
-                // Tạo short URL dựa trên số thứ tự
-                uploadCount++;
-                const shortUrl = `https://aswrf.github.io/autodirect/gif/${uploadCount}`;
-
-                // Tạo URL box
-                const urlBox = document.createElement('div');
-                urlBox.className = 'url-box';
-                urlBox.textContent = shortUrl;
-                container.appendChild(urlBox);
-
-                // Tạo button group
-                const buttonGroup = document.createElement('div');
-                buttonGroup.className = 'button-group';
-
-                // Nút copy
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'copy-btn';
-                copyBtn.textContent = 'Copy URL';
-                copyBtn.onclick = () => {
-                    navigator.clipboard.writeText(shortUrl).then(() => {
-                        copyBtn.textContent = 'Đã copy!';
-                        setTimeout(() => {
-                            copyBtn.textContent = 'Copy URL';
-                        }, 2000);
-                    });
-                };
-                buttonGroup.appendChild(copyBtn);
-
-                // Nút xóa
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'delete-btn';
-                deleteBtn.textContent = 'Xóa';
-                deleteBtn.onclick = () => {
-                    showDeleteConfirmation(container);
-                };
-                buttonGroup.appendChild(deleteBtn);
-
-                container.appendChild(buttonGroup);
-                gallery.insertBefore(container, gallery.firstChild);
-
-                // Lưu thông tin vào localStorage
-                const gifInfo = {
-                    id: uploadCount,
-                    data: gifData,
-                    targetUrl: TARGET_URL
-                };
-                localStorage.setItem(`gif_${uploadCount}`, JSON.stringify(gifInfo));
-            }
-
-            function showDeleteConfirmation(container) {
-                const confirmBox = document.createElement('div');
-                confirmBox.className = 'confirm-delete';
-                
-                const message = document.createElement('p');
-                message.textContent = 'Bạn có chắc chắn muốn xóa?';
-                
-                const buttonsContainer = document.createElement('div');
-                buttonsContainer.className = 'confirm-buttons';
-                
-                const yesButton = document.createElement('button');
-                yesButton.className = 'confirm-yes';
-                yesButton.textContent = 'Có';
-                yesButton.onclick = () => {
-                    container.remove();
-                };
-                
-                const noButton = document.createElement('button');
-                noButton.className = 'confirm-no';
-                noButton.textContent = 'Không';
-                noButton.onclick = () => {
-                    confirmBox.remove();
-                };
-                
-                buttonsContainer.appendChild(yesButton);
-                buttonsContainer.appendChild(noButton);
-                confirmBox.appendChild(message);
-                confirmBox.appendChild(buttonsContainer);
-                container.appendChild(confirmBox);
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
